@@ -1,9 +1,7 @@
-##########################################
-##Loading Gazebo, Rviz and python script##
-##########################################
+## Loading Gazebo, Rviz and python script
 
 
-#################Feng#####################
+## Feng
 export TURTLEBOT_GAZEBO_WORLD_FILE=$HOME/catkin_ws/src/group_project/project/launch/project.world
 vglrun roslaunch turtlebot_gazebo turtlebot_world.launch
 cd ./catkin_ws/src/group_project/project/launch
@@ -12,7 +10,7 @@ roslaunch turtlebot_rviz_launchers view_navigation.launch
 rosrun project Cluedo_Character_Finder.py
 
 
-################Native####################
+## Native
 export TURTLEBOT_GAZEBO_WORLD_FILE=$HOME/catkin_ws/src/group_project/project/launch/project.world
 roslaunch turtlebot_gazebo turtlebot_world.launch
 cd ./catkin_ws/src/group_project/project/launch
