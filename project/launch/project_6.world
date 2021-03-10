@@ -1,6 +1,6 @@
 <sdf version='1.4'>
   <world name='default'>
-    <model name='character'>
+    <model name='plum'>
       <static>1</static>
       <link name='link'>
         <pose>0 0 1.4 0 -0 0</pose>
@@ -30,9 +30,9 @@
           </geometry>
           <material>
             <script>
-              <uri>model://cluedo_character/materials/scripts</uri>
-              <uri>model://cluedo_character/materials/textures</uri>
-              <name>Cluedo_character/Image</name>
+              <uri>model://plum/materials/scripts</uri>
+              <uri>model://plum/materials/textures</uri>
+              <name>plum/Image</name>
             </script>
           </material>
         </visual>
@@ -565,7 +565,7 @@
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
-      <model name='character'>
+      <model name='plum'>
         <pose>-8.16312 -1.04809 -0.548785 0 -0 1.56682</pose>
         <link name='link'>
           <pose>-8.16312 -1.04809 0.851215 0 -0 1.56682</pose>
