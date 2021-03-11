@@ -7,6 +7,7 @@ from actionlib_msgs.msg import *
 from geometry_msgs.msg import Pose, Point, Quaternion
 import geometry_msgs.msg
 from nav_msgs.msg import Odometry
+import nav_msgs.srv
 import yaml
 
 class GoToPose:
@@ -24,7 +25,7 @@ class GoToPose:
 
         self.pos = None
     def updatePos(self,data):
-        print(data)
+        #print(data)
         self.pos = data.pose.pose
 
 
@@ -32,21 +33,22 @@ class GoToPose:
         rospy.sleep(1)
 
         print("\n\n\n")
+        frame_id = "map"
 
         current_poseStamp = geometry_msgs.msg.PoseStamped()
         current_poseStamp.header.stamp = rospy.Time.now()
-        current_poseStamp.header.frame_id = "odom"
+        current_poseStamp.header.frame_id = frame_id
         current_poseStamp.pose = self.pos
 
         room1_poseStamp = geometry_msgs.msg.PoseStamped()
         room1_poseStamp.header.stamp = rospy.Time.now()
-        room1_poseStamp.header.frame_id = "odom"
+        room1_poseStamp.header.frame_id = frame_id
         room1_poseStamp.pose.position.x = self.points['room1_centre_xy'][0]
         room1_poseStamp.pose.position.y = self.points['room1_centre_xy'][1]
 
         room2_poseStamp = geometry_msgs.msg.PoseStamped()
         room2_poseStamp.header.stamp = rospy.Time.now()
-        room2_poseStamp.header.frame_id = "odom"
+        room2_poseStamp.header.frame_id = frame_id
         room2_poseStamp.pose.position.x = self.points['room2_centre_xy'][0]
         room2_poseStamp.pose.position.y = self.points['room2_centre_xy'][1]
 
@@ -55,6 +57,17 @@ class GoToPose:
         print(room1_poseStamp)
         print("\n\n\n")
         print(room2_poseStamp)
+
+        path_room1 = nav_msgs.srv.GetPlan()
+        path_room1.start = current_poseStamp
+        path_room1.goal = room1_poseStamp
+        path_room1.tolerance = 0.3
+
+        get_plan = rospy.ServiceProxy('move_base/make_plan', nav_msgs.srv.GetPlan)
+        path_to_room1 = get_plan(current_poseStamp,room1_poseStamp,0.3)
+
+        print("\n\n\n\n")
+        print(path_to_room1)
 
     def shutdown(self):
         rospy.loginfo("Stop")
