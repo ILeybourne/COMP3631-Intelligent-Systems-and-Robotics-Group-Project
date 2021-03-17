@@ -60,10 +60,6 @@ class circleFinder():
         self.findGreenCircle(self, mask_image_g)
         self.findRedCircle(self, mask_image_r)
 
-        cv2.namedWindow('Camera_Feed2')
-        cv2.imshow('Camera_Feed2', cv_image)
-        cv2.waitKey(3)
-
     def findGreenCircle(self, cF, cv_image):
         output = cv_image.copy()
         grey_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
