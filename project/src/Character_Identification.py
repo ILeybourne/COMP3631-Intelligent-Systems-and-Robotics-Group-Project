@@ -30,8 +30,10 @@ class characterIdentification():
         self.Ysensitivity = 10
         self.Psensitivity = 10
         self.Bsensitivity = 10
-        self.pub_red_circle = rospy.Publisher('red_circle_topic', Bool, queue_size=10)
-        self.pub_green_circle = rospy.Publisher('green_circle_topic', Bool, queue_size=10)
+        self.pub_mustard = rospy.Publisher('mustard_topic', Bool, queue_size=10)
+        self.pub_peacock = rospy.Publisher('peacock_topic', Bool, queue_size=10)
+        self.pub_plum = rospy.Publisher('plum_topic', Bool, queue_size=10)
+        self.pub_scarlet = rospy.Publisher('scarlet_topic', Bool, queue_size=10)
         self.pub_circle_based_velocity = rospy.Publisher('mobile_base/commands/velocity', Twist)
 
         self.desired_velocity = Twist()
@@ -83,24 +85,81 @@ class characterIdentification():
         mask_red = cv2.inRange(hsv_image, hsv_red_lower, hsv_red_upper)
 
         # Combine masks
-        mask_yb = cv2.bitwise_or(mask_yellow, mask_blue)
-        mask_ybp = cv2.bitwise_or(mask_yb, mask_purple)
-        mask_ybpr = cv2.bitwise_or(mask_ybp, mask_red)
+        # mask_yb = cv2.bitwise_or(mask_yellow, mask_blue)
+        # mask_ybp = cv2.bitwise_or(mask_yb, mask_purple)
+        # mask_ybpr = cv2.bitwise_or(mask_ybp, mask_red)
 
         # Apply the mask to the original image
-        mask_image_ybpr = cv2.bitwise_and(cv_image, cv_image, mask=mask_ybpr)
+        mask_image_y = cv2.bitwise_and(cv_image, cv_image, mask=mask_yellow)
+        mask_image_b = cv2.bitwise_and(cv_image, cv_image, mask=mask_blue)
+        mask_image_p = cv2.bitwise_and(cv_image, cv_image, mask=mask_purple)
+        mask_image_r = cv2.bitwise_and(cv_image, cv_image, mask=mask_red)
 
-        self.findCharacters(self, mask_image_ybpr)
+        self.findMustard(self, mask_image_y)
+        self.findPeacock(self, mask_image_b)
+        self.findPlum(self, mask_image_p)
+        self.findScarlet(self, mask_image_r)
 
-    def findCharacters(self, cI, cv_image):
+    def findMustard(self, cI, cv_image):
         output = cv_image.copy()
-        grey_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
-        edges = cv2.Canny(grey_image, 100, 200)
-        blur = cv2.GaussianBlur(edges, (5, 5), 0)
+        one_D_cv_image = cv_image.reshape((-1))
+        mCounter = cv2.countNonZero(one_D_cv_image) / 3
 
-        # Debugging show red circle and input image
-        cv2.imshow("output red", np.hstack([cv_image, output]))
-        cv2.waitKey(3)
+        m_flag = False
+        if mCounter >= 300:
+            m_flag = True
+
+        self.pub_mustard.publish(m_flag)
+        # Debugging
+        # print(mCounter)
+        # cv2.imshow("output yellow", np.hstack([cv_image, output]))
+        # cv2.waitKey(3)
+
+    def findPeacock(self, cI, cv_image):
+        output = cv_image.copy()
+        one_D_cv_image = cv_image.reshape((-1))
+        pCounter = cv2.countNonZero(one_D_cv_image) / 3
+
+        p_flag = False
+        if pCounter >= 300:
+            p_flag = True
+
+        self.pub_peacock.publish(p_flag)
+        # Debugging
+        # print(pCounter)
+        # cv2.imshow("output blue", np.hstack([cv_image, output]))
+        # cv2.waitKey(3)
+
+    def findPlum(self, cI, cv_image):
+        output = cv_image.copy()
+        one_D_cv_image = cv_image.reshape((-1))
+        plCounter = cv2.countNonZero(one_D_cv_image) / 3
+
+        pl_flag = False
+        if plCounter >= 300:
+            pl_flag = True
+
+        self.pub_plum.publish(pl_flag)
+        # Debugging
+        # print(plCounter)
+        # cv2.imshow("output purple", np.hstack([cv_image, output]))
+        # cv2.waitKey(3)
+
+    def findScarlet(self, cI, cv_image):
+        output = cv_image.copy()
+        one_D_cv_image = cv_image.reshape((-1))
+        sCounter = cv2.countNonZero(one_D_cv_image) / 3
+
+        s_flag = False
+        if sCounter >= 300:
+            s_flag = True
+
+        self.pub_scarlet.publish(s_flag)
+
+        # Debugging
+        # print(sCounter)
+        # cv2.imshow("output red s ", np.hstack([cv_image, output]))
+        # cv2.waitKey(3)
 
 def main(args):
     rospy.init_node('Circle_Finder', anonymous=True)
