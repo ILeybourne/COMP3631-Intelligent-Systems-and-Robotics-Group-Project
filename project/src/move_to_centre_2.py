@@ -65,8 +65,8 @@ class GoToPose:
         path_to_room1 = get_plan(current_poseStamp,room1_poseStamp,self.path_tolerance)
         path_to_room2 = get_plan(current_poseStamp, room2_poseStamp, self.path_tolerance)
         
-        room1_distance = 0
-        room2_distance = 0
+        room1_distance = 0.0
+        room2_distance = 0.0
 
         # calculate the route lengths for both route plans
         for i in range (len(path_to_room1.plan.poses)-1):
