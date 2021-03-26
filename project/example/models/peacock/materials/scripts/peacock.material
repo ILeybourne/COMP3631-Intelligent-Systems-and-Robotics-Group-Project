@@ -1,4 +1,4 @@
-material plum/Image
+material peacock/Image
 {
   technique
   {
@@ -10,7 +10,7 @@ material plum/Image
 
       texture_unit
       {
-        texture Plum.png
+        texture Peacock.png
         filtering trilinear
       }
     }
