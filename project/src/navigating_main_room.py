@@ -5,6 +5,7 @@ import numpy as np
 import rospy
 import sys
 
+
 from geometry_msgs.msg import Twist, Vector3
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
@@ -127,7 +128,7 @@ class GoToPose():#x
         rospy.loginfo("Wait for the action server to come up")
 
 
-        self.move_base.wait_for_server(rospy.Duration(5))
+        self.move_base.wait_for_server()
 
     def goto(self, pos, quat):#x
 
