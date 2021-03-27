@@ -6,12 +6,13 @@ import sys
 import yaml
 from os.path import expanduser
 import math
-
 from std_msgs.msg import Bool
+
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 import actionlib
 from actionlib_msgs.msg import *
 from geometry_msgs.msg import Pose, Point, Quaternion
+
 
 green_discovered = False
 red_discovered = False
@@ -171,12 +172,14 @@ class GoToPose():  # x
         goal = MoveBaseGoal()
         goal.target_pose.header.frame_id = 'map'
         goal.target_pose.header.stamp = rospy.Time.now()
+
         goal.target_pose.pose = Pose(Point(pos['x'], pos['y'], 0.000),
                                      Quaternion(quat['r1'], quat['r2'], quat['r3'], quat['r4']))
         moving = True
         self.move_base.send_goal(goal)
 
         success = self.move_base.wait_for_result(rospy.Duration(60))
+
         state = self.move_base.get_state()
         result = False
 
@@ -186,7 +189,9 @@ class GoToPose():  # x
             self.move_base.cancel_goal()
 
         self.goal_sent = False
+
         moving = False
+
         return result
 
     def shutdown(self):
