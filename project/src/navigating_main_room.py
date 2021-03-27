@@ -25,7 +25,7 @@ second_flag = 0
 class colourIdentifier():
 
     def __init__(self):
-        self.pub = rospy.Publisher('mobile_base/commands/velocity', Twist)
+        self.pub = rospy.Publisher('mobile_base/commands/velocity', Twist, queue_size=10)
         self.rate = rospy.Rate(10)
         self.desired_velocity = Twist()
 
