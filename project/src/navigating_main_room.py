@@ -4,6 +4,8 @@ import cv2
 import numpy as np
 import rospy
 import sys
+import yaml
+from os.path import expanduser
 
 
 from geometry_msgs.msg import Twist, Vector3
@@ -163,7 +165,11 @@ class GoToPose():#x
 
 def center_of_room_2():#x
     navigator = GoToPose()
-    with open("../example/input_points.yaml", 'r') as stream:
+
+    # Get home directory
+    home = expanduser("~")
+    # and open input_points.yaml file
+    with open(home + "/catkin_ws/src/group_project/project/example/input_points.yaml", 'r') as stream:
         points = yaml.safe_load(stream)
 
     x = points['room2_centre_xy'][0]
