@@ -7,28 +7,21 @@ import yaml
 from os.path import expanduser
 import math
 
-from geometry_msgs.msg import Twist, Vector3
 from std_msgs.msg import Bool
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 import actionlib
 from actionlib_msgs.msg import *
 from geometry_msgs.msg import Pose, Point, Quaternion
 
-first_flag = 0
-green_discovered = 0
-red_discovered = 0
-count_track = 0
-second_flag = 0
-
+green_discovered = False
+red_discovered = False
+moving = False
 
 class Navigator():
     def __init__(self):
-        self.pub = rospy.Publisher('mobile_base/commands/velocity', Twist, queue_size=10)
-        self.rate = rospy.Rate(10)
-        self.desired_velocity = Twist()
-
         self.red_circle_sub = rospy.Subscriber('red_circle_topic', Bool, self.callbackRedCircle)
-        self.green_circle_sub = rospy.Subscriber('green_circle_topic', Bool, self.callbackGreenCirle)
+        self.green_circle_sub = rospy.Subscriber('green_circle_topic', Bool, self.callbackGreenCircle)
+        self.moving_pub = rospy.Publisher('turtle_bot_main_room_moving_topic', Bool, queue_size=10)
 
         # Get home directory
         home = expanduser("~")
@@ -47,6 +40,24 @@ class Navigator():
         self.room2_centre_x = points['room2_centre_xy'][0]
         self.room2_centre_y = points['room2_centre_xy'][1]
 
+    def callbackRedCircle(self, data):
+        global red_discovered
+        global moving
+        if not moving:
+            red_discovered = data.data
+        # For Debugging
+        # if not moving:
+        #     print("red found " + str(data.data))
+
+    def callbackGreenCircle(self, data):
+        global green_discovered
+        global moving
+        if not moving:
+            green_discovered = data.data
+        # For Debugging
+        # if not moving:
+        #     print("green found " + str(data.data))
+
     def center_of_room_1(self):  # x
         room_1_navigator = GoToPose()
 
@@ -58,12 +69,14 @@ class Navigator():
         quaternion = {'r1': 0.000, 'r2': 0.000, 'r3': np.sin(theta / 2.0), 'r4': np.cos(theta / 2.0)}
 
         rospy.loginfo("Go to (%s, %s) pose", position['x'], position['y'])
+        self.moving_pub.publish(True)
         success = room_1_navigator.goto(position, quaternion)
 
         if success:
             rospy.loginfo("Hooray, reached the desired pose")
         else:
             rospy.loginfo("The base has failed to reach the desired pose")
+        self.moving_pub.publish(False)
         rospy.sleep(1)
 
     def center_of_room_2(self):  # x
@@ -77,21 +90,21 @@ class Navigator():
         quaternion = {'r1': 0.000, 'r2': 0.000, 'r3': np.sin(theta / 2.0), 'r4': np.cos(theta / 2.0)}
 
         rospy.loginfo("Go to (%s, %s) pose", position['x'], position['y'])
+        self.moving_pub.publish(True)
         success = room_2_navigator.goto(position, quaternion)
 
         if success:
             rospy.loginfo("Hooray, reached the desired pose")
         else:
             rospy.loginfo("The base has failed to reach the desired pose")
+        self.moving_pub.publish(False)
         rospy.sleep(1)
 
     def entrance_of_room_1(self):  # x
         navigator = GoToPose()
-        with open("../example/input_points.yaml", 'r') as stream:
-            points = yaml.safe_load(stream)
 
-        x = points['room1_entrance_xy'][0]
-        y = points['room1_entrance_xy'][1]
+        x = self.room1_entrance_x
+        y = self.room1_entrance_y
 
         theta = 0
         if x - self.room1_centre_x != 0:
@@ -104,6 +117,7 @@ class Navigator():
         quaternion = {'r1': 0.000, 'r2': 0.000, 'r3': np.sin(theta / 2.0), 'r4': np.cos(theta / 2.0)}
 
         rospy.loginfo("Go to (%s, %s) pose", position['x'], position['y'])
+        self.moving_pub.publish(True)
         success = navigator.goto(position, quaternion)
 
         if success:
@@ -111,15 +125,14 @@ class Navigator():
         else:
             rospy.loginfo("The base has failed to reach the desired pose")
 
+        self.moving_pub.publish(False)
         rospy.sleep(1)
 
     def entrance_of_room_2(self):  # x
         room_2_navigator = GoToPose()
-        with open("../example/input_points.yaml", 'r') as stream:
-            points = yaml.safe_load(stream)
 
-        x = points['room2_entrance_xy'][0]
-        y = points['room2_entrance_xy'][1]
+        x = self.room2_entrance_x
+        y = self.room2_entrance_y
 
         theta = 0
         if x - self.room2_centre_x != 0:
@@ -132,6 +145,7 @@ class Navigator():
         quaternion = {'r1': 0.000, 'r2': 0.000, 'r3': np.sin(theta / 2.0), 'r4': np.cos(theta / 2.0)}
 
         rospy.loginfo("Go to (%s, %s) pose", position['x'], position['y'])
+        self.moving_pub.publish(True)
         success = room_2_navigator.goto(position, quaternion)
 
         if success:
@@ -139,43 +153,40 @@ class Navigator():
         else:
             rospy.loginfo("The base has failed to reach the desired pose")
 
+        self.moving_pub.publish(False)
         rospy.sleep(1)
 
 
 class GoToPose():  # x
     def __init__(self):
         self.goal_sent = False
-
         rospy.on_shutdown(self.shutdown)
-
         self.move_base = actionlib.SimpleActionClient("move_base", MoveBaseAction)
         rospy.loginfo("Wait for the action server to come up")
-
         self.move_base.wait_for_server()
 
     def goto(self, pos, quat):  # x
-
+        global moving
         self.goal_sent = True
         goal = MoveBaseGoal()
         goal.target_pose.header.frame_id = 'map'
         goal.target_pose.header.stamp = rospy.Time.now()
         goal.target_pose.pose = Pose(Point(pos['x'], pos['y'], 0.000),
                                      Quaternion(quat['r1'], quat['r2'], quat['r3'], quat['r4']))
-
+        moving = True
         self.move_base.send_goal(goal)
 
         success = self.move_base.wait_for_result(rospy.Duration(60))
-
         state = self.move_base.get_state()
         result = False
 
         if success and state == GoalStatus.SUCCEEDED:
-
             result = True
         else:
             self.move_base.cancel_goal()
 
         self.goal_sent = False
+        moving = False
         return result
 
     def shutdown(self):
@@ -187,33 +198,40 @@ class GoToPose():  # x
 
 def main(args):
     rospy.init_node('colourIdentifier', anonymous=True)
-    global count_track
-    global second_flag
+    count_track = 0
     global red_discovered
-    global first_flag
+    first_flag = False
+    second_flag = False
     global green_discovered
-
+    global moving
     navigator = Navigator()
+    in_room = False
 
-    while not rospy.is_shutdown():
-        if first_flag == 0:
+    while not rospy.is_shutdown() and not in_room:
+        if first_flag == False:
+            print("sending to room 1")
             navigator.entrance_of_room_1()
-            first_flag = 1
-
-        if second_flag == 0:
             count_track += 1
-            second_flag = 1
+            first_flag = True
 
-        if green_discovered == 1 and count_track == 1:
+        if green_discovered == True and count_track == 1:
+            print("moving to to room 1 center")
             navigator.center_of_room_1()
+            in_room = True
 
-        if green_discovered == 1 and count_track == 2:
-            navigator.center_of_room_2()
-
-        if red_discovered == 1 and count_track == 2:
+        if second_flag == False and green_discovered == False:
+            print("sending to to room 2")
             navigator.entrance_of_room_2()
+            in_room = True
             count_track += 1
+            second_flag = True
 
+        if green_discovered == True and count_track == 2:
+            navigator.center_of_room_2()
+            in_room = True
+        else:
+            navigator.center_of_room_1()
+            in_room = True
 
 if __name__ == '__main__':
     main(sys.argv)
