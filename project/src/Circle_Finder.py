@@ -31,6 +31,7 @@ class circleFinder():
         self.pub_red_circle = rospy.Publisher('red_circle_topic', Bool, queue_size=10)
         self.pub_green_circle = rospy.Publisher('green_circle_topic', Bool, queue_size=10)
         self.pub_circle_based_velocity = rospy.Publisher('mobile_base/commands/velocity', Twist)
+        self.pub_main_room_moving_sub = rospy.Subscriber('turtle_bot_main_room_moving_topic', Bool, self.externalMovementCallback )
 
         self.desired_velocity = Twist()
         self.forward = 0.2
@@ -46,8 +47,10 @@ class circleFinder():
         self.image_x = 0
         self.image_y = 0
 
+        self.moving = False
 
-
+    def externalMovementCallback(self, data):
+        self.moving = data.data
 
     def imageCallback(self, data):
         try:
@@ -115,15 +118,17 @@ class circleFinder():
                         self.green_circle_flag = True
                         self.green_circle_flag_global = True
                     else:
-                        if not y > 0 + r + self.image_y / 10:
-                            self.desired_velocity.linear.x = self.forward
-                        elif not y < self.image_y - r - self.image_y/10:
-                            self.desired_velocity.linear.x = self.backwards
+                        if not self.moving:
+                            if not y > 0 + r + self.image_y / 10:
+                                self.desired_velocity.linear.x = self.forward
+                            elif not y < self.image_y - r - self.image_y/10:
+                                self.desired_velocity.linear.x = self.backwards
                 else:
-                    if not x > self.image_x / 2 - self.image_x / 20:
-                        self.desired_velocity.angular.z = self.right
-                    elif not  x < self.image_x / 2 + self.image_x / 20:
-                        self.desired_velocity.angular.z = self.left
+                    if not self.moving:
+                        if not x > self.image_x / 2 - self.image_x / 20:
+                            self.desired_velocity.angular.z = self.right
+                        elif not  x < self.image_x / 2 + self.image_x / 20:
+                            self.desired_velocity.angular.z = self.left
 
                 cv2.circle(output, (i[0], i[1]), i[2], (0, 255, 0), 2)
         # If no circle is found we are facing the wrong direction and should spin (behaviour dependant on other nodes and has been disabled for the time being)
@@ -132,7 +137,8 @@ class circleFinder():
         #         self.desired_velocity.angular.z = self.left
 
         self.pub_green_circle.publish(self.green_circle_flag)
-        self.pub_circle_based_velocity.publish(self.desired_velocity)
+        if not self.moving:
+            self.pub_circle_based_velocity.publish(self.desired_velocity)
 
         # Debugging show green circle and input image
         # cv2.imshow("output green", np.hstack([cv_image, output]))
