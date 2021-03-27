@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from __future__ import division
+import cv2
 import numpy as np
 import rospy
 import sys
@@ -9,12 +10,15 @@ import math
 from std_msgs.msg import Bool
 
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
+from cv_bridge import CvBridge, CvBridgeError
+from sensor_msgs.msg import Image
 import actionlib
 from actionlib_msgs.msg import *
 from geometry_msgs.msg import Pose, Point, Quaternion
 
 
 green_discovered = False
+green_discovered_at_least_once = False
 red_discovered = False
 moving = False
 
@@ -22,6 +26,7 @@ class Navigator():
     def __init__(self):
         self.red_circle_sub = rospy.Subscriber('red_circle_topic', Bool, self.callbackRedCircle)
         self.green_circle_sub = rospy.Subscriber('green_circle_topic', Bool, self.callbackGreenCircle)
+        self.image_sub = rospy.Subscriber('image_topic', Image, self.imageCallback)
         self.moving_pub = rospy.Publisher('turtle_bot_main_room_moving_topic', Bool, queue_size=10)
 
         # Get home directory
@@ -41,6 +46,17 @@ class Navigator():
         self.room2_centre_x = points['room2_centre_xy'][0]
         self.room2_centre_y = points['room2_centre_xy'][1]
 
+        self.bridge = CvBridge()
+        self.cv_image = np.zeros((480, 640, 3), np.uint8)
+
+    def imageCallback(self, data):
+        try:
+            self.cv_image = self.bridge.imgmsg_to_cv2(data)
+        except CvBridgeError as e:
+            print("Image conversion failed")
+            print(e)
+            pass
+
     def callbackRedCircle(self, data):
         global red_discovered
         global moving
@@ -52,7 +68,11 @@ class Navigator():
 
     def callbackGreenCircle(self, data):
         global green_discovered
+        global green_discovered_at_least_once
         global moving
+        if green_discovered_at_least_once == False and data.data:
+            cv2.imwrite('green.png', self.cv_image)
+            green_discovered_at_least_once = True
         if not moving:
             green_discovered = data.data
         # For Debugging
