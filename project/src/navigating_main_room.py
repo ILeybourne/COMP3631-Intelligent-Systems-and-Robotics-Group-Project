@@ -71,7 +71,7 @@ class Navigator():
         global green_discovered_at_least_once
         global moving
         if green_discovered_at_least_once == False and data.data:
-            cv2.imwrite('green.png', self.cv_image)
+            cv2.imwrite('green_circle.png', self.cv_image)
             green_discovered_at_least_once = True
         if not moving:
             green_discovered = data.data
