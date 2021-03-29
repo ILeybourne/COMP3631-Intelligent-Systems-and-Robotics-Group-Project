@@ -34,7 +34,7 @@ class imageConverter():
 
 
 def main(args):
-    rospy.init_node('imageConverter', anonymous=True)
+    rospy.init_node('image_converter', anonymous=True)
     iC = imageConverter()
     try:
         rospy.spin()

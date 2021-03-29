@@ -4,7 +4,6 @@
 
 from __future__ import division
 import cv2
-import cv
 import numpy as np
 import rospy
 import sys
@@ -19,6 +18,7 @@ class characterIdentification():
     def __init__(self):
         self.bridge = CvBridge()
         self.sub = rospy.Subscriber('image_topic', Image, self.imageCallback)
+        sub_rect = rospy.Subscriber('rectangle_topic', Bool, self.callbackRectangle)
         self.character_printed = False
 
         # Initialise sensitivity variable for colour detection
@@ -177,8 +177,12 @@ class characterIdentification():
         # cv2.imshow("output red s ", np.hstack([cv_image, output]))
         # cv2.waitKey(3)
 
+    def callbackRectangle(self, data):
+        print("callbackRectangle " + str(data.data))
+
+
 def main(args):
-    rospy.init_node('Circle_Finder', anonymous=True)
+    rospy.init_node('character_identification', anonymous=True)
     cI = characterIdentification()
     print("Initializing character finder")
     try:

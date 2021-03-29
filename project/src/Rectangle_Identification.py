@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-# This final piece of skeleton code will be centred around
-# to follow a colour and stop upon sight of another one.
-
 from __future__ import division
 import cv2
 import numpy as np
@@ -22,9 +19,9 @@ class rectangleIdentification():
         self.pub_rectangle = rospy.Publisher('rectangle_topic', Bool, queue_size=10)
 
         # Initialise sensitivity variable for colour detection
-        self.hue_sensitivity = 10
+        self.hue_sensitivity = 30
         self.sat_sensitivity = 10
-        self.val_sensitivity = 50
+        self.val_sensitivity = 10
 
         # self.pub_circle_based_velocity = rospy.Publisher('mobile_base/commands/velocity', Twist)
         #
@@ -75,7 +72,7 @@ class rectangleIdentification():
 
         self.findRectangle(self, mask_image_black)
 
-    def findRectangle(self, cI, cv_image):
+    def findRectangle(self, rI, cv_image):
         # Copy input image
         output = cv_image.copy()
 
@@ -95,10 +92,6 @@ class rectangleIdentification():
             (cv_image[:, :, 2] != 255)
         )
 
-
-
-
-        print(len(other_pixels[0]))
         rect_flag = False
         # If there exist more than 2 non white pixels draw a rectangle from first to last pixels and then set rectangle flag to true
         if len(other_pixels[0]) >= 50:
@@ -113,11 +106,11 @@ class rectangleIdentification():
         self.pub_rectangle.publish(rect_flag)
 
         # Debugging
-        # cv2.imshow("output rectangle", np.hstack([cv_image, output]))
-        # cv2.waitKey(3)
+        cv2.imshow("output rectangle", np.hstack([cv_image, output]))
+        cv2.waitKey(3)
 
 def main(args):
-    rospy.init_node('Circle_Finder', anonymous=True)
+    rospy.init_node('rectangle_identification', anonymous=True)
     rI = rectangleIdentification()
     print("Initializing rectangle finder")
     try:

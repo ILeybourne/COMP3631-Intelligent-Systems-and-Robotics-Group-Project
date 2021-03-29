@@ -222,7 +222,7 @@ class GoToPose():  # x
 
 
 def main(args):
-    rospy.init_node('colourIdentifier', anonymous=True)
+    rospy.init_node('navigating_main_room', anonymous=True)
     count_track = 0
     global red_discovered
     first_flag = False
