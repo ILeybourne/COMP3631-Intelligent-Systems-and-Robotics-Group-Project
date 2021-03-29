@@ -16,4 +16,4 @@ roslaunch turtlebot_gazebo turtlebot_world.launch \
 cd ./catkin_ws/src/group_project/project/launch \
 roslaunch $HOME/catkin_ws/src/group_project/project/launch/simulated_localisation.launch map_file:=$HOME/catkin_ws/src/group_project/project/example/map/project_map.yaml \
 roslaunch turtlebot_rviz_launchers view_navigation.launch \
-rosrun project Cluedo_Character_Finder.py
+roslaunch $HOME/catkin_ws/src/group_project/project/launch/cludeo_character_finder.launch 
