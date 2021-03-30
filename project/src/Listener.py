@@ -38,8 +38,10 @@ def callbackRectangleInBounds(data):
 def callbackRectangleInts(data):
     print("callbackRectangleInts " + str(data.data))
 
+
 def callbackShutdown(data):
-    print("callbackShutdown " + str(data.data))
+    print("callbackShutdown " + str(data.data[0]) + " " + str(data.data[1]) + " " + str(data.data[2]) + " " + str(
+        data.data[3]))
 
 
 def listener():
