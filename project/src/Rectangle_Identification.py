@@ -10,7 +10,6 @@ from std_msgs.msg import Bool, Int32MultiArray
 from cv_bridge import CvBridge, CvBridgeError
 from actionlib_msgs.msg import *
 
-
 class rectangleIdentification():
     def __init__(self):
         self.bridge = CvBridge()
@@ -91,35 +90,34 @@ class rectangleIdentification():
         min_in_y = 0
         max_in_x = 0
         max_in_y = 0
-        # If there exist more than 2 non white pixels draw a rectangle from first to last pixels and then set rectangle flag to true
+        # If there exist more than 50 non white pixels draw a rectangle from first to last pixels and then set rectangle flag to true
         if len(other_pixels[0]) >= 50:
             rect_flag = True
+
             # Find first and last none white pixels
             min_in_x = min(other_pixels[0])
             min_in_y = min(other_pixels[1])
             max_in_x = max(other_pixels[0])
             max_in_y = max(other_pixels[1])
 
-            if min_in_x > 50 and max_in_x < self.image_x - 50:
+            # If first and last aren't to close to the edge of the edge publish rectangle is in bounds
+            if min_in_x > 50 and max_in_x < self.image_x - 50 and min_in_y > 20 and max_in_x < self.image_y - 20:
                 rectangle_in_bounds_flag = True
 
-            if min_in_y > 20 and max_in_x < self.image_y - 20:
-                rectangle_in_bounds_flag = True
-
+            # Draw rectangle on image
             cv2.rectangle(output, (min_in_y, min_in_x), (max_in_y, max_in_x), (255, 255, 255), 3)
 
+        # Publish rectangle information
         self.pub_rectangle.publish(rect_flag)
         self.pub_rectangle_in_bounds.pulish(rectangle_in_bounds_flag)
         if rect_flag:
             self.pub_rectangle_ints.publish([min_in_x, min_in_y, max_in_x, max_in_y])
         else:
-            self.pub_rectangle_in_bounds
             self.pub_rectangle_ints.publish([-1, -1, -1, -1])
 
         # Debugging
         cv2.imshow("output rectangle", np.hstack([cv_image, output]))
         cv2.waitKey(3)
-
 
 def main(args):
     rospy.init_node('rectangle_identification', anonymous=True)
