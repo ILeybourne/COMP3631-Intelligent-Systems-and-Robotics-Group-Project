@@ -172,7 +172,7 @@ class circleFinder():
         # cv2.waitKey(3)
 
 def main(args):
-    rospy.init_node('Circle_Finder', anonymous=True)
+    rospy.init_node('circle_finder', anonymous=True)
     cF = circleFinder()
     print("Initializing circle finder")
     try:

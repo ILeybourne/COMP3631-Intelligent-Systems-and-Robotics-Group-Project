@@ -4,7 +4,6 @@
 
 from __future__ import division
 import cv2
-import cv
 import numpy as np
 import rospy
 import sys
@@ -19,11 +18,8 @@ class characterIdentification():
     def __init__(self):
         self.bridge = CvBridge()
         self.sub = rospy.Subscriber('image_topic', Image, self.imageCallback)
-        self.green_circle_flag = False
-        self.red_circle_flag = False
-
-        self.green_circle_flag_global = False
-        self.red_circle_flag_global = False
+        sub_rect = rospy.Subscriber('rectangle_topic', Bool, self.callbackRectangle)
+        self.character_printed = False
 
         # Initialise sensitivity variable for colour detection
         self.Rsensitivity = 5
@@ -108,6 +104,11 @@ class characterIdentification():
         m_flag = False
         if mCounter >= 300:
             m_flag = True
+            # if not self.character_printed:
+            #     self.character_printed = True
+            #     file = open("cluedo_character.txt", "w")
+            #     file.write("Colonel Mustard")
+            #     file.close()
 
         self.pub_mustard.publish(m_flag)
         # Debugging
@@ -123,6 +124,11 @@ class characterIdentification():
         p_flag = False
         if pCounter >= 300:
             p_flag = True
+            # if not self.character_printed:
+            #     self.character_printed = True
+            #     file = open("cluedo_character.txt", "w")
+            #     file.write("Mrs Peacock")
+            #     file.close()
 
         self.pub_peacock.publish(p_flag)
         # Debugging
@@ -138,6 +144,11 @@ class characterIdentification():
         pl_flag = False
         if plCounter >= 300:
             pl_flag = True
+            # if not self.character_printed:
+            #     self.character_printed = True
+            #     file = open("cluedo_character.txt", "w")
+            #     file.write("Professor Plum")
+            #     file.close()
 
         self.pub_plum.publish(pl_flag)
         # Debugging
@@ -153,6 +164,11 @@ class characterIdentification():
         s_flag = False
         if sCounter >= 300:
             s_flag = True
+            # if not self.character_printed:
+            #     self.character_printed = True
+            #     file = open("cluedo_character.txt", "w")
+            #     file.write("Miss Scarlett")
+            #     file.close()
 
         self.pub_scarlet.publish(s_flag)
 
@@ -161,8 +177,12 @@ class characterIdentification():
         # cv2.imshow("output red s ", np.hstack([cv_image, output]))
         # cv2.waitKey(3)
 
+    def callbackRectangle(self, data):
+        print("callbackRectangle " + str(data.data))
+
+
 def main(args):
-    rospy.init_node('Circle_Finder', anonymous=True)
+    rospy.init_node('character_identification', anonymous=True)
     cI = characterIdentification()
     print("Initializing character finder")
     try:
