@@ -16,11 +16,11 @@ import actionlib
 from actionlib_msgs.msg import *
 from geometry_msgs.msg import Pose, Point, Quaternion
 
-
 green_discovered = False
 green_discovered_at_least_once = False
 red_discovered = False
 moving = False
+
 
 class Navigator():
     def __init__(self):
@@ -28,6 +28,7 @@ class Navigator():
         self.green_circle_sub = rospy.Subscriber('green_circle_topic', Bool, self.callbackGreenCircle)
         self.image_sub = rospy.Subscriber('image_topic', Image, self.imageCallback)
         self.moving_pub = rospy.Publisher('turtle_bot_main_room_moving_topic', Bool, queue_size=10)
+        self.in_room_pub = rospy.Publisher('turtle_bot_in_green_room', Bool, queue_size=10)
 
         # Get home directory
         home = expanduser("~")
@@ -244,19 +245,20 @@ def main(args):
             navigator.center_of_room_1()
             in_room = True
 
-        if second_flag == False and green_discovered == False:
+        if second_flag == False and green_discovered == False and not in_room:
             print("sending to to room 2")
             navigator.entrance_of_room_2()
-            in_room = True
             count_track += 1
             second_flag = True
 
-        if green_discovered == True and count_track == 2:
-            navigator.center_of_room_2()
-            in_room = True
-        else:
-            navigator.center_of_room_1()
-            in_room = True
+        if not in_room:
+            if green_discovered == True and count_track == 2:
+                navigator.center_of_room_2()
+                in_room = True
+            else:
+                navigator.center_of_room_1()
+                in_room = True
+
 
 if __name__ == '__main__':
     main(sys.argv)
