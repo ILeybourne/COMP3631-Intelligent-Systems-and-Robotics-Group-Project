@@ -38,6 +38,9 @@ def callbackRectangleInBounds(data):
 def callbackRectangleInts(data):
     print("callbackRectangleInts " + str(data.data))
 
+def callbackShutdown(data):
+    print("callbackShutdown " + str(data.data))
+
 
 def listener():
     rospy.init_node('listener', anonymous=True)
@@ -50,6 +53,7 @@ def listener():
     sub = rospy.Subscriber('rectangle_topic', Bool, callbackRectangle)
     sub = rospy.Subscriber('rectangle_in_bounds_topic', Bool, callbackRectangleInBounds)
     sub = rospy.Subscriber('rectangle_ints_topic', Int32MultiArray, callbackRectangleInts)
+    sub = rospy.Subscriber('shutdown_topic', Bool, callbackShutdown)
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
 
