@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, Int32MultiArray
 
 
 def callbackRed(data):
@@ -31,6 +31,14 @@ def callbackRectangle(data):
     print("callbackRectangle " + str(data.data))
 
 
+def callbackRectangleInBounds(data):
+    print("callbackRectangleInBounds " + str(data.data))
+
+
+def callbackRectangleInts(data):
+    print("callbackRectangleInts " + str(data.data))
+
+
 def listener():
     rospy.init_node('listener', anonymous=True)
     sub = rospy.Subscriber('red_circle_topic', Bool, callbackRed)
@@ -40,6 +48,8 @@ def listener():
     sub = rospy.Subscriber('plum_topic', Bool, callbackPlum)
     sub = rospy.Subscriber('scarlet_topic', Bool, callbackScarlet)
     sub = rospy.Subscriber('rectangle_topic', Bool, callbackRectangle)
+    sub = rospy.Subscriber('rectangle_in_bounds_topic', Bool, callbackRectangleInBounds)
+    sub = rospy.Subscriber('rectangle_ints_topic', Int32MultiArray, callbackRectangleInts)
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
 

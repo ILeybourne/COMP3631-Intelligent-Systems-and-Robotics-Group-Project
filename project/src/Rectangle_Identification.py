@@ -10,13 +10,14 @@ from std_msgs.msg import Bool, Int32MultiArray
 from cv_bridge import CvBridge, CvBridgeError
 from actionlib_msgs.msg import *
 
+
 class rectangleIdentification():
     def __init__(self):
         self.bridge = CvBridge()
         self.sub = rospy.Subscriber('image_topic', Image, self.imageCallback)
+
         self.pub_rectangle = rospy.Publisher('rectangle_topic', Bool, queue_size=10)
         self.pub_rectangle_in_bounds = rospy.Publisher('rectangle_in_bounds_topic', Bool, queue_size=10)
-
         # Publishes location rectangle corners in form r1x, r1y, r2x, r2y. Publishes -1,-1,-1,-1 if no rectangle is identified
         self.pub_rectangle_ints = rospy.Publisher('rectangle_ints_topic', Int32MultiArray, queue_size=10)
 
@@ -24,7 +25,6 @@ class rectangleIdentification():
         self.hue_sensitivity = 30
         self.sat_sensitivity = 10
         self.val_sensitivity = 10
-
         # Black colour value of outer rectangle for Cludeo characters
         self.hue_lower = 220.0 / 2
         self.hue_upper = 360.0 / 2
@@ -118,6 +118,7 @@ class rectangleIdentification():
         # Debugging
         cv2.imshow("output rectangle", np.hstack([cv_image, output]))
         cv2.waitKey(3)
+
 
 def main(args):
     rospy.init_node('rectangle_identification', anonymous=True)
