@@ -117,7 +117,7 @@ class rectangleIdentification():
         # cv2.waitKey(3)
 
 def main(args):
-    rospy.init_node('Circle_Finder', anonymous=True)
+    rospy.init_node('Rectangle_Finder', anonymous=True)
     rI = rectangleIdentification()
     print("Initializing rectangle finder")
     try:
