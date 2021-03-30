@@ -47,6 +47,14 @@ class CharacterOutput():
         self.pub_scarlet = rospy.Publisher('scarlet_topic', Bool, queue_size=10)
         self.pub_circle_based_velocity = rospy.Publisher('mobile_base/commands/velocity', Twist)
 
+        self.mustard = False
+        self.peacock = False
+        self.plum = False
+        self.scarlet = False
+        self.rectangle = False
+        self.rectangle_in_bounds = False
+        self.rectangle_ints = False
+
         self.character_x = 0
         self.character_y = 0
         self.character_w = 0
@@ -68,6 +76,10 @@ class CharacterOutput():
 
         self.image_x = self.cv_image.shape[1]
         self.image_y = self.cv_image.shape[0]
+
+        self.captureImage()
+        self.writeCharacter()
+        self.shutdownAllNodes()
 
     def callbackMustard(self, data):
         self.mustard = data.data
@@ -91,38 +103,33 @@ class CharacterOutput():
         self.rectangle_ints = data.data
 
     def captureImage(self):
-        if self.rectangle and self.rectangle_in_bounds and (self.mustard or self.peacock or self.plum or self.scarlet):
+        if self.rectangle and self.rectangle_in_bounds and (
+                self.mustard or self.peacock or self.plum or self.scarlet) and not self.character_captured:
+            print("capturing")
             cv2.imwrite('cluedo_character.png', self.cv_image)
             self.character_captured = True
 
     def writeCharacter(self):
-        if self.mustard:
-            if not self.character_printed:
-                self.character_printed = True
+        if not self.character_printed:
+            if self.mustard:
                 file = open("cluedo_character.txt", "w")
                 file.write("Colonel Mustard")
                 file.close()
                 self.character_printed = True
 
-        if self.peacock:
-            if not self.character_printed:
-                self.character_printed = True
+            if self.peacock:
                 file = open("cluedo_character.txt", "w")
                 file.write("Mrs Peacock")
                 file.close()
                 self.character_printed = True
 
-        if self.plum:
-            if not self.character_printed:
-                self.character_printed = True
+            if self.plum:
                 file = open("cluedo_character.txt", "w")
                 file.write("Professor Plum")
                 file.close()
                 self.character_printed = True
 
-        if self.scarlet:
-            if not self.character_printed:
-                self.character_printed = True
+            if self.scarlet:
                 file = open("cluedo_character.txt", "w")
                 file.write("Miss Scarlett")
                 file.close()
@@ -134,9 +141,10 @@ class CharacterOutput():
         else:
             self.pub_shutdown_all_nodes.publish(False)
 
+
 def main(args):
     rospy.init_node('character_output', anonymous=True)
-    cO = CharacterOutput()
+    c_o = CharacterOutput()
     print("Initializing character finder")
     try:
         rospy.spin()
