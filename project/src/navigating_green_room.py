@@ -28,7 +28,7 @@ class greenNavigation():
         #Publishers
         self.movement_pub = rospy.Publisher('mobile_base/commands/velocity', Twist, queue_size=10)
 
-        #simple movement to rotate anticlockwose around a point
+        #simple movement to rotate anticlockwise around a point
         self.rotation_angle = 10 # change for more precision
         self.rotate = Twist()
         self.rotate.angular.z = self.rotation_angle*(self.PI/180)
@@ -78,7 +78,7 @@ class greenNavigation():
 
 
     # Find the middle rotation for the portrait, then moves towards it 
-    # makes the assumption portrait is in view of turtlebot already AND that rotating anti-clockwise will move frame
+    # makes the assumption portrait is in view of turtlebot already AND that rotating anti-clockwise will move it into frame
     # Return: None
     def moveTowardPortrait(self):
         rotation = 0
@@ -107,7 +107,7 @@ class greenNavigation():
             self.movement_pub.publish(rotation_msg)
             rospy.sleep(1)
 
-        # MOVE FORWARD
+        # MOVE FORWARDS CODE - UNFINISHED
 
 def main (args):
     rospy.init_node('green_room_navigator', anonymous=True)
