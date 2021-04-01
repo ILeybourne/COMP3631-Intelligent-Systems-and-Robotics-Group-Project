@@ -17,7 +17,7 @@ class greenNavigation():
         self.PI = 3.1415926535897
 
         #internal flag for handling execution
-        self.in_green_room = False
+        self.in_green_room = True # Change to True to test code in isolation
         self.nav_completed = False
         self.rectangle_flag = False
 
@@ -46,7 +46,7 @@ class greenNavigation():
         while(not rospy.is_shutdown()):
             if (self.in_green_room == True):
                 # check for the portrait from initial position
-                seen = lookForRectange()
+                seen = self.lookForRectange()
                 if seen:
                     print("I can see It!!!")
                 else:
@@ -69,7 +69,7 @@ class greenNavigation():
                     self.movement_pub.publish(self.rotate)
                     #sleep after issuing rotation, give chance for message and subsequent processing by other nodes
                     rospy.sleep(1)
-                    rotation = rotation+rotation_angle
+                    rotation = rotation+self.rotation_angle
         
         if self.rectangle_flag == False:
             return False
@@ -113,7 +113,7 @@ def main (args):
     rospy.init_node('green_room_navigator', anonymous=True)
     gNav = greenNavigation()
     try:
-        gNav.greenNavigation()
+        gNav.startNavigation()
     except rospy.ROSInterruptException:
         pass
 
