@@ -26,10 +26,6 @@ class Timer():
             # Get total duration
             total_time = self.end_time - self.start_time
 
-            print("start_time " + str(self.start_time))
-            print("end_time " +   str(self.end_time))
-            print("total_time " + str(total_time))
-
             # Publish duration as seconds or minutes
             if total_time < 60:
                 self.pub_timer.publish("Completed in " + str(total_time) + " seconds")
@@ -38,8 +34,6 @@ class Timer():
                 secs = total_time % 60
                 self.pub_timer.publish("Completed in " + str(mins) + ":" + str(secs))
             self.ended = True
-
-
 
 
 def main(args):
