@@ -1,4 +1,5 @@
 <launch>
+	<node pkg="project" type="Timer.py" name="timer" output="screen"/>
 	<node pkg="project" type="Image_Converter.py" name="image_converter" output="screen"/>
 	<node pkg="project" type="Circle_Finder.py" name="circle_finder" output="screen"/>
 	<node pkg="project" type="navigating_main_room.py" name="navigating_main_room" output="screen"/>

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from std_msgs.msg import Bool, Int32MultiArray
+from std_msgs.msg import Bool, Int32MultiArray, String
 
 
 def callbackRed(data):
@@ -43,6 +43,10 @@ def callbackShutdown(data):
     print("callbackShutdown " + str(data.data))
 
 
+def callbackTimer(data):
+    print("callbackTimer " + str(data.data))
+
+
 def listener():
     rospy.init_node('listener', anonymous=True)
     sub = rospy.Subscriber('red_circle_topic', Bool, callbackRed)
@@ -55,6 +59,8 @@ def listener():
     sub = rospy.Subscriber('rectangle_in_bounds_topic', Bool, callbackRectangleInBounds)
     sub = rospy.Subscriber('rectangle_ints_topic', Int32MultiArray, callbackRectangleInts)
     sub = rospy.Subscriber('shutdown_topic', Bool, callbackShutdown)
+    sub = rospy.Subscriber('timer_topic', String, callbackTimer)
+
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
 
