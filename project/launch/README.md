@@ -11,12 +11,12 @@
 'project_12.world'
 
 ## World 2
-'project_4.world' \
-'project_5.world' \
-'project.world'
-
+'project_4.world'
 
 ## World 3
+'project_5.world'
+
+## World 4
 'project_6.world' \
 'project_7.world'
 
