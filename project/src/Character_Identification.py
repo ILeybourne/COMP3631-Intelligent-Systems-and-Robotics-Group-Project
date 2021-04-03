@@ -18,7 +18,7 @@ class characterIdentification():
     def __init__(self):
         self.bridge = CvBridge()
         self.sub = rospy.Subscriber('image_topic', Image, self.imageCallback)
-        sub_rect = rospy.Subscriber('rectangle_topic', Bool, self.callbackRectangle)
+        # sub_rect = rospy.Subscriber('rectangle_topic', Bool, self.callbackRectangle)
         self.character_printed = False
 
         # Initialise sensitivity variable for colour detection
@@ -67,7 +67,7 @@ class characterIdentification():
         hsv_purple_lower = np.array([280.0/2 - self.Psensitivity, 15.0/100*255, 15.0/100*255])
         hsv_purple_upper = np.array([320.0/2 + self.Psensitivity, 50.0/100*255, 35.0/100*255])
 
-        hsv_red_lower = np.array([0.0 / 2 - self.Rsensitivity, 100, 100])
+        hsv_red_lower = np.array([0.0 / 2 - self.Rsensitivity, 50, 50])
         hsv_red_upper = np.array([0.0 / 2 + self.Rsensitivity, 255, 255])
 
 
@@ -177,8 +177,8 @@ class characterIdentification():
         # cv2.imshow("output red s ", np.hstack([cv_image, output]))
         # cv2.waitKey(3)
 
-    def callbackRectangle(self, data):
-        print("callbackRectangle " + str(data.data))
+    # def callbackRectangle(self, data):
+        # print("callbackRectangle " + str(data.data))
 
 
 def main(args):
