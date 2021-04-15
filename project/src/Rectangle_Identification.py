@@ -109,7 +109,7 @@ class rectangleIdentification():
 
         # Publish rectangle information
         self.pub_rectangle.publish(rect_flag)
-        self.pub_rectangle_in_bounds.pulish(rectangle_in_bounds_flag)
+        self.pub_rectangle_in_bounds.publish(rectangle_in_bounds_flag)
         if rect_flag:
             self.pub_rectangle_ints.publish([min_in_x, min_in_y, max_in_x, max_in_y])
         else:
