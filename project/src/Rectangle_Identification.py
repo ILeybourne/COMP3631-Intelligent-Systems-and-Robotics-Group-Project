@@ -111,9 +111,9 @@ class rectangleIdentification():
         self.pub_rectangle.publish(rect_flag)
         self.pub_rectangle_in_bounds.publish(rectangle_in_bounds_flag)
         if rect_flag:
-            self.pub_rectangle_ints.publish([min_in_x, min_in_y, max_in_x, max_in_y])
+            self.pub_rectangle_ints.publish(data=[min_in_x, min_in_y, max_in_x, max_in_y])
         else:
-            self.pub_rectangle_ints.publish([-1, -1, -1, -1])
+            self.pub_rectangle_ints.publish(data=[-1, -1, -1, -1])
 
         # Debugging
         cv2.imshow("output rectangle", np.hstack([cv_image, output]))
