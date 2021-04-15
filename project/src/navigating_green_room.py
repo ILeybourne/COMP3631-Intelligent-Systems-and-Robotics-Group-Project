@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import rospy
 import sys
+import math
 
 from geometry_msgs.msg import Twist, Vector3, Pose, Point, Quaternion
 from std_msgs.msg import Bool
@@ -13,9 +14,6 @@ PI = 3.1415926535897
 
 class greenNavigation():
     def __init__(self):
-        # pi constant for conversions
-        self.PI = 3.1415926535897
-
         #internal flag for handling execution
         self.in_green_room = True # Change to True to test code in isolation
         self.nav_completed = False
@@ -33,7 +31,7 @@ class greenNavigation():
         #simple movement to rotate anticlockwise around a point
         self.rotation_angle = 20 # change for more precision
         self.rotate = Twist()
-        self.rotate.angular.z = self.rotation_angle*(self.PI/180)
+        self.rotate.angular.z = math.radians(self.rotation_angle)
 
         self.move_forward = Twist()
         self.move_forward.linear.x = 0.2
@@ -76,7 +74,7 @@ class greenNavigation():
                         self.movement_pub.publish(self.rotate)
                         #sleep after issuing rotation, give chance for message and subsequent processing by other nodes
                         self.rate.sleep()
-                    rospy.sleep(20)
+                    rospy.sleep(5)
                     print("rotated 20 degrees?")
                     rotation = rotation+self.rotation_angle
 
@@ -104,7 +102,7 @@ class greenNavigation():
         
         # build same rotation message but in the clockwise direction
         rotation_msg = Twist()
-        rotation_msg.angular.z = - self.rotation_angle*(self.PI/180)
+        rotation_msg.angular.z = - math.radians(self.rotation_angle)
         
         # handles rotations above the rotation angle, rotating the rotation angle x times
         if (middle > rotation_angle):
@@ -116,7 +114,7 @@ class greenNavigation():
 
         # handles rotations under the rotation angle, if they are needed
         if (middle > 0):
-            rotation_msg.angular.z = - middle*(self.PI/180)
+            rotation_msg.angular.z = - math.radians(middle)
             for i in range(10):
                 self.movement_pub.publish(rotation_msg)
                 self.rate.sleep()
