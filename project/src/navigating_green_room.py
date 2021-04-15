@@ -28,10 +28,15 @@ class greenNavigation():
         #Publishers
         self.movement_pub = rospy.Publisher('mobile_base/commands/velocity', Twist, queue_size=10)
 
+        self.rate = rospy.Rate(10) #10hz
+
         #simple movement to rotate anticlockwise around a point
-        self.rotation_angle = 10 # change for more precision
+        self.rotation_angle = 20 # change for more precision
         self.rotate = Twist()
         self.rotate.angular.z = self.rotation_angle*(self.PI/180)
+
+        self.move_forward = Twist()
+        self.move_forward.linear.x = 0.2
 
     # inside_green_room subscriber callback
     def greenRoomFlagCallback(self, data):
@@ -49,6 +54,7 @@ class greenNavigation():
                 seen = self.lookForRectange()
                 if seen:
                     print("I can see It!!!")
+                    status = self.moveTowardPortrait()
                 else:
                     print("I cant see it :(")
                 
@@ -66,10 +72,14 @@ class greenNavigation():
     def lookForRectange(self):
         rotation = 0
         while (rotation < 360 and self.rectangle_flag == False):
-                    self.movement_pub.publish(self.rotate)
-                    #sleep after issuing rotation, give chance for message and subsequent processing by other nodes
-                    rospy.sleep(1)
+                    for i in range(10):
+                        self.movement_pub.publish(self.rotate)
+                        #sleep after issuing rotation, give chance for message and subsequent processing by other nodes
+                        self.rate.sleep()
+                    rospy.sleep(20)
+                    print("rotated 20 degrees?")
                     rotation = rotation+self.rotation_angle
+
         
         if self.rectangle_flag == False:
             return False
@@ -79,13 +89,15 @@ class greenNavigation():
 
     # Find the middle rotation for the portrait, then moves towards it 
     # makes the assumption portrait is in view of turtlebot already AND that rotating anti-clockwise will move it into frame
-    # Return: None
+    # Return: 0 for when turtle is in correct position for the photo, 1 for successful movement
     def moveTowardPortrait(self):
         rotation = 0
         while(self.rectange_flag == True):
-            self.movement_pub.publish(self.rotate)
+            for i in range(10):
+                self.movement_pub.publish(self.rotate)
+                self.rate.sleep()
             rospy.sleep(1)
-            rotation = rotation + rotation_angle
+            rotation = rotation + self.rotation_angle
         
         # find angle to focus the portrait
         middle = rotation/2
@@ -97,17 +109,29 @@ class greenNavigation():
         # handles rotations above the rotation angle, rotating the rotation angle x times
         if (middle > rotation_angle):
             while (middle > rotation_angle):
-                self.movement_pub.publish(rotation_msg)
-                rospy.sleep(1)
-                middle = middle - rotation_angle
+                for i in range(10):
+                    self.movement_pub.publish(rotation_msg)
+                    self.rate.sleep()
+                middle = middle - self.rotation_angle
 
         # handles rotations under the rotation angle, if they are needed
         if (middle > 0):
             rotation_msg.angular.z = - middle*(self.PI/180)
-            self.movement_pub.publish(rotation_msg)
-            rospy.sleep(1)
+            for i in range(10):
+                self.movement_pub.publish(rotation_msg)
+                self.rate.sleep()
 
-        # MOVE FORWARDS CODE - UNFINISHED
+        # Move Forward Code
+        if (rotate < 30):
+            return 0
+        else:
+            for i in range(10):
+                self.movement_pub.publish(self.move_forward)
+                self.rate.sleep()
+            rospy.sleep(1)
+            return 1
+
+        
 
 def main (args):
     rospy.init_node('green_room_navigator', anonymous=True)
