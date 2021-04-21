@@ -2,6 +2,7 @@
 import rospy
 import sys
 import math
+import random
 
 from geometry_msgs.msg import Twist, Vector3, Pose, Point, Quaternion
 from std_msgs.msg import Bool
@@ -81,7 +82,9 @@ class greenNavigation():
 
                 else:
                     print("I cant see it :(")
-                    self.randomMovement()
+                    status = 1
+                    while status == 1:
+                        status = self.randomMovement()
                 
             else:
                 #debugging print for main function idling
@@ -154,7 +157,54 @@ class greenNavigation():
             return 1
 
     def randomMovement(self):
-        
+        angle = random.randrange(0,360,1)
+
+        # build same rotation message but in the clockwise direction
+        rotation_msg = Twist()
+        rotation_msg.angular.z = - math.radians(self.rotation_angle)
+
+        if (angle > self.rotation_angle):
+            while (angle > self.rotation_angle):
+                for i in range(10):
+                    self.movement_pub.publish(rotation_msg)
+                    self.rate.sleep()
+                angle = angle - self.rotation_angle
+
+        # handles rotations under the rotation angle, if they are needed
+        if (angle > 0):
+            rotation_msg.angular.z = - math.radians(angle)
+            for i in range(10):
+                self.movement_pub.publish(rotation_msg)
+                self.rate.sleep()
+
+        # move forward set amount
+        for i in range(10):
+            self.movement_pub.publish(self.move_forward)
+            self.rate.sleep()
+        rospy.sleep(1)
+
+        #check if the turtlebot has collided with the wall
+        for i in range(40):
+            self.movement_pub.publish(self.cam_adjust)
+            self.rate.sleep()
+        # give ros time to recieve and process the bumper response
+        rospy.sleep(1)
+
+        if self.bumped == True:
+            #rotate 180 degrees and move back to original position
+            for i in range(20):
+                self.movement_pub.publish(self.cam_adjust)
+                self.rate.sleep()
+            for i in range(10):
+                self.movement_pub.publish(self.move_forward)
+                self.rate.sleep()
+            rospy.sleep(1)
+
+            self.bumped = False
+            return 1
+        else:
+            return 0
+
 
 
         
