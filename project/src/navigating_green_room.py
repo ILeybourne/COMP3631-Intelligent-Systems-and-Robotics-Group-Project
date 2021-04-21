@@ -18,10 +18,12 @@ class greenNavigation():
         self.in_green_room = True # Change to True to test code in isolation
         self.nav_completed = False
         self.rectangle_flag = False
+        self.bumped = False
 
         #subscribers to determine when to start execution
         self.green_room_flag_sub = rospy.Subscriber('inside_green_room', Bool, self.greenRoomFlagCallback)
         self.rectangle_detection_sub = rospy.Subscriber('rectangle_topic', Bool, self.rectangleFlagCallback)
+        self.bumber_sub = rospy.Subscriber('/mobile_base/events/bumper', BumperEvent, self.bumperHandler)
 
         #Publishers
         self.movement_pub = rospy.Publisher('mobile_base/commands/velocity', Twist, queue_size=10)
@@ -30,23 +32,36 @@ class greenNavigation():
         self.rate = rospy.Rate(10) #10hz
 
         #simple movement to rotate anticlockwise around a point
-        self.rotation_angle = 20 # change for more precision
+        self.rotation_angle = 10 # change for more precision
         self.rotate = Twist()
         self.rotate.angular.z = math.radians(self.rotation_angle)
 
         self.move_forward = Twist()
         self.move_forward.linear.x = 0.2
 
+        self.cam_adjust = Twist()
+        self.cam_adjust.angular.z = - math.radians(90)
+
+        # give ros time to initialise the subscribers and publishers
+        rospy.sleep(2)
+
     # inside_green_room subscriber callback
     def greenRoomFlagCallback(self, data):
         self.in_green_room = data.data
 
-    # rectangle_tobpic subscriber callback
+    # rectangle_topic subscriber callback
     def rectangleFlagCallback(self, data):
         self.rectangle_flag = data.data
 
+    # bumper handler subscriber callback
+    # bumped flag reset in randomMovement function
+    def bumperHandler(self, data):
+        if (data.state == BumperEvent.PRESSED):
+            self.bumped = True
+
     # main navigation function
     def startNavigation(self):
+        moved = 0
         while(not rospy.is_shutdown()):
             if (self.in_green_room == True):
                 # prevent circle_Finder from published Twist movements
@@ -55,16 +70,23 @@ class greenNavigation():
                 seen = self.lookForRectange()
                 if seen:
                     print("I can see It!!!")
-                    status = self.moveTowardPortrait()
+                    if moved <= 8:
+                        status = self.moveTowardPortrait()
+                        moved += 1
+                        for i in range(10):
+                            self.movement_pub.publish(self.cam_adjust)
+                            self.rate.sleep()
+                    else:
+                        print("movement complete")
+
                 else:
                     print("I cant see it :(")
+                    self.randomMovement()
                 
             else:
                 #debugging print for main function idling
-                #print("waiting...")
+                print("waiting...")
     
-
-
 
 
     # rotates around current pose to look for character in the scene
@@ -77,11 +99,10 @@ class greenNavigation():
                         self.movement_pub.publish(self.rotate)
                         #sleep after issuing rotation, give chance for message and subsequent processing by other nodes
                         self.rate.sleep()
-                    rospy.sleep(5)
+                    rospy.sleep(1)
                     print("rotated 20 degrees?")
                     rotation = rotation+self.rotation_angle
 
-        
         if self.rectangle_flag == False:
             return False
         else:
@@ -93,7 +114,7 @@ class greenNavigation():
     # Return: 0 for when turtle is in correct position for the photo, 1 for successful movement
     def moveTowardPortrait(self):
         rotation = 0
-        while(self.rectange_flag == True):
+        while(self.rectangle_flag == True):
             for i in range(10):
                 self.movement_pub.publish(self.rotate)
                 self.rate.sleep()
@@ -101,15 +122,15 @@ class greenNavigation():
             rotation = rotation + self.rotation_angle
         
         # find angle to focus the portrait
-        middle = rotation/2
+        middle = (rotation/2) + 5
         
         # build same rotation message but in the clockwise direction
         rotation_msg = Twist()
         rotation_msg.angular.z = - math.radians(self.rotation_angle)
         
         # handles rotations above the rotation angle, rotating the rotation angle x times
-        if (middle > rotation_angle):
-            while (middle > rotation_angle):
+        if (middle > self.rotation_angle):
+            while (middle > self.rotation_angle):
                 for i in range(10):
                     self.movement_pub.publish(rotation_msg)
                     self.rate.sleep()
@@ -123,7 +144,7 @@ class greenNavigation():
                 self.rate.sleep()
 
         # Move Forward Code
-        if (rotate < 30):
+        if (rotation < 30):
             return 0
         else:
             for i in range(10):
@@ -131,6 +152,10 @@ class greenNavigation():
                 self.rate.sleep()
             rospy.sleep(1)
             return 1
+
+    def randomMovement(self):
+        
+
 
         
 
