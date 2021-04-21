@@ -25,6 +25,7 @@ class greenNavigation():
 
         #Publishers
         self.movement_pub = rospy.Publisher('mobile_base/commands/velocity', Twist, queue_size=10)
+        self.stop_circle_finder_pub = rospy.Publisher('turtle_bot_main_room_moving_topic', Bool, queue_size=10)
 
         self.rate = rospy.Rate(10) #10hz
 
@@ -48,6 +49,8 @@ class greenNavigation():
     def startNavigation(self):
         while(not rospy.is_shutdown()):
             if (self.in_green_room == True):
+                # prevent circle_Finder from published Twist movements
+                self.stop_circle_finder_pub.publish(True)
                 # check for the portrait from initial position
                 seen = self.lookForRectange()
                 if seen:
@@ -58,7 +61,7 @@ class greenNavigation():
                 
             else:
                 #debugging print for main function idling
-                print("waiting...")
+                #print("waiting...")
     
 
 
