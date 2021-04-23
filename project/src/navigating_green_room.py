@@ -64,8 +64,6 @@ class greenNavigation():
     def startNavigation(self):
         moved = 0
         while (not rospy.is_shutdown()):
-            print(self.in_green_room)
-            print("start nav")
             if (self.in_green_room == True):
                 # prevent circle_Finder from published Twist movements
                 self.stop_circle_finder_pub.publish(True)
