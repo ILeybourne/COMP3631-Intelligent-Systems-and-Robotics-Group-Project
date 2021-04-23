@@ -6,6 +6,7 @@ import random
 
 from geometry_msgs.msg import Twist, Vector3, Pose, Point, Quaternion
 from std_msgs.msg import Bool
+from kobuki_msgs.msg import BumperEvent
 
 
 # notice about angle handling:
@@ -15,7 +16,7 @@ from std_msgs.msg import Bool
 class greenNavigation():
     def __init__(self):
         # internal flag for handling execution
-        self.in_green_room = True  # Change to True to test code in isolation
+        self.in_green_room = False  # Change to True to test code in isolation
         self.nav_completed = False
         self.rectangle_flag = False
         self.bumped = False
@@ -23,7 +24,7 @@ class greenNavigation():
         # subscribers to determine when to start execution
         self.green_room_flag_sub = rospy.Subscriber('turtle_bot_in_green_room', Bool, self.greenRoomFlagCallback)
         self.rectangle_detection_sub = rospy.Subscriber('rectangle_topic', Bool, self.rectangleFlagCallback)
-        self.bumber_sub = rospy.Subscriber('/mobile_base/events/bumper', BumperEvent, self.bumperHandler)
+        self.bumper_sub = rospy.Subscriber('/mobile_base/events/bumper', BumperEvent, self.bumperHandler)
 
         # Publishers
         self.movement_pub = rospy.Publisher('mobile_base/commands/velocity', Twist, queue_size=10)
@@ -63,6 +64,8 @@ class greenNavigation():
     def startNavigation(self):
         moved = 0
         while (not rospy.is_shutdown()):
+            print(self.in_green_room)
+            print("start nav")
             if (self.in_green_room == True):
                 # prevent circle_Finder from published Twist movements
                 self.stop_circle_finder_pub.publish(True)
@@ -204,6 +207,7 @@ class greenNavigation():
 
 def main(args):
     rospy.init_node('green_room_navigator', anonymous=True)
+    print("init green_room_navigator")
     gNav = greenNavigation()
     try:
         gNav.startNavigation()
