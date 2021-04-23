@@ -7,4 +7,5 @@
 	<node pkg="project" type="Character_Identification.py" name="character_identification" output="screen"/>
 	<node pkg="project" type="Character_Output.py" name="character_output" output="screen"/>
 	<node pkg="project" type="Listener.py" name="listener" output="screen"/>
+	<node pkg="project" type="green_room_navigator.py" name="green_room_navigator" output="screen"/>
 </launch>
