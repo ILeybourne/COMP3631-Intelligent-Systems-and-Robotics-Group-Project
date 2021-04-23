@@ -7,8 +7,6 @@ import random
 from geometry_msgs.msg import Twist, Vector3, Pose, Point, Quaternion
 from std_msgs.msg import Bool
 
-PI = 3.1415926535897
-
 # notice about angle handling:
 #   All angles shown in numbers are in degrees
 #   All rotations performed must be converted to radians using angle*(PI/180)
