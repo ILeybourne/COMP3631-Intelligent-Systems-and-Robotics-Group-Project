@@ -259,6 +259,8 @@ def main(args):
 
         navigator.in_room_pub.publish(navigator.in_room)
 
+    while not rospy.is_shutdown():
+        navigator.in_room_pub.publish(navigator.in_room)
 
 if __name__ == '__main__':
     main(sys.argv)
