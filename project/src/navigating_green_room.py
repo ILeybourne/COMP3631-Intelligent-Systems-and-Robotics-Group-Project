@@ -7,31 +7,32 @@ import random
 from geometry_msgs.msg import Twist, Vector3, Pose, Point, Quaternion
 from std_msgs.msg import Bool
 
+
 # notice about angle handling:
 #   All angles shown in numbers are in degrees
 #   All rotations performed must be converted to radians using angle*(PI/180)
 
 class greenNavigation():
     def __init__(self):
-        #internal flag for handling execution
-        self.in_green_room = True # Change to True to test code in isolation
+        # internal flag for handling execution
+        self.in_green_room = True  # Change to True to test code in isolation
         self.nav_completed = False
         self.rectangle_flag = False
         self.bumped = False
 
-        #subscribers to determine when to start execution
-        self.green_room_flag_sub = rospy.Subscriber('inside_green_room', Bool, self.greenRoomFlagCallback)
+        # subscribers to determine when to start execution
+        self.green_room_flag_sub = rospy.Subscriber('turtle_bot_in_green_room', Bool, self.greenRoomFlagCallback)
         self.rectangle_detection_sub = rospy.Subscriber('rectangle_topic', Bool, self.rectangleFlagCallback)
         self.bumber_sub = rospy.Subscriber('/mobile_base/events/bumper', BumperEvent, self.bumperHandler)
 
-        #Publishers
+        # Publishers
         self.movement_pub = rospy.Publisher('mobile_base/commands/velocity', Twist, queue_size=10)
         self.stop_circle_finder_pub = rospy.Publisher('turtle_bot_main_room_moving_topic', Bool, queue_size=10)
 
-        self.rate = rospy.Rate(10) #10hz
+        self.rate = rospy.Rate(10)  # 10hz
 
-        #simple movement to rotate anticlockwise around a point
-        self.rotation_angle = 10 # change for more precision
+        # simple movement to rotate anticlockwise around a point
+        self.rotation_angle = 10  # change for more precision
         self.rotate = Twist()
         self.rotate.angular.z = math.radians(self.rotation_angle)
 
@@ -61,7 +62,7 @@ class greenNavigation():
     # main navigation function
     def startNavigation(self):
         moved = 0
-        while(not rospy.is_shutdown()):
+        while (not rospy.is_shutdown()):
             if (self.in_green_room == True):
                 # prevent circle_Finder from published Twist movements
                 self.stop_circle_finder_pub.publish(True)
@@ -83,12 +84,10 @@ class greenNavigation():
                     status = 1
                     while status == 1:
                         status = self.randomMovement()
-                
-            else:
-                #debugging print for main function idling
-                print("waiting...")
-    
 
+            else:
+                # debugging print for main function idling
+                print("waiting...")
 
     # rotates around current pose to look for character in the scene
     # CATION: does NOT reset to rotation from before function, exits with new rotation 
@@ -96,39 +95,38 @@ class greenNavigation():
     def lookForRectange(self):
         rotation = 0
         while (rotation < 360 and self.rectangle_flag == False):
-                    for i in range(10):
-                        self.movement_pub.publish(self.rotate)
-                        #sleep after issuing rotation, give chance for message and subsequent processing by other nodes
-                        self.rate.sleep()
-                    rospy.sleep(1)
-                    print("rotated 20 degrees?")
-                    rotation = rotation+self.rotation_angle
+            for i in range(10):
+                self.movement_pub.publish(self.rotate)
+                # sleep after issuing rotation, give chance for message and subsequent processing by other nodes
+                self.rate.sleep()
+            rospy.sleep(1)
+            print("rotated 20 degrees?")
+            rotation = rotation + self.rotation_angle
 
         if self.rectangle_flag == False:
             return False
         else:
             return True
 
-
-    # Find the middle rotation for the portrait, then moves towards it 
+    # Find the middle rotation for the portrait, then moves towards it
     # makes the assumption portrait is in view of turtlebot already AND that rotating anti-clockwise will move it into frame
     # Return: 0 for when turtle is in correct position for the photo, 1 for successful movement
     def moveTowardPortrait(self):
         rotation = 0
-        while(self.rectangle_flag == True):
+        while (self.rectangle_flag == True):
             for i in range(10):
                 self.movement_pub.publish(self.rotate)
                 self.rate.sleep()
             rospy.sleep(1)
             rotation = rotation + self.rotation_angle
-        
+
         # find angle to focus the portrait
-        middle = (rotation/2) + 5
-        
+        middle = (rotation / 2) + 5
+
         # build same rotation message but in the clockwise direction
         rotation_msg = Twist()
         rotation_msg.angular.z = - math.radians(self.rotation_angle)
-        
+
         # handles rotations above the rotation angle, rotating the rotation angle x times
         if (middle > self.rotation_angle):
             while (middle > self.rotation_angle):
@@ -155,7 +153,7 @@ class greenNavigation():
             return 1
 
     def randomMovement(self):
-        angle = random.randrange(0,360,1)
+        angle = random.randrange(0, 360, 1)
 
         # build same rotation message but in the clockwise direction
         rotation_msg = Twist()
@@ -181,7 +179,7 @@ class greenNavigation():
             self.rate.sleep()
         rospy.sleep(1)
 
-        #check if the turtlebot has collided with the wall
+        # check if the turtlebot has collided with the wall
         for i in range(40):
             self.movement_pub.publish(self.cam_adjust)
             self.rate.sleep()
@@ -189,7 +187,7 @@ class greenNavigation():
         rospy.sleep(1)
 
         if self.bumped == True:
-            #rotate 180 degrees and move back to original position
+            # rotate 180 degrees and move back to original position
             for i in range(20):
                 self.movement_pub.publish(self.cam_adjust)
                 self.rate.sleep()
@@ -204,16 +202,14 @@ class greenNavigation():
             return 0
 
 
-
-        
-
-def main (args):
+def main(args):
     rospy.init_node('green_room_navigator', anonymous=True)
     gNav = greenNavigation()
     try:
         gNav.startNavigation()
     except rospy.ROSInterruptException:
         pass
+
 
 if __name__ == '__main__':
     main(sys.argv)

@@ -47,6 +47,14 @@ def callbackTimer(data):
     print("callbackTimer " + str(data.data))
 
 
+def callbackInGreenRoom(data):
+    print("callbackInGreenRoom " + str(data.data))
+
+
+def callbackTurtleBotMainRoomMovingTopic(data):
+    print("callbackTurtleBotMainRoomMovingTopic " + str(data.data))
+
+
 def listener():
     rospy.init_node('listener', anonymous=True)
     sub = rospy.Subscriber('red_circle_topic', Bool, callbackRed)
@@ -60,6 +68,8 @@ def listener():
     sub = rospy.Subscriber('rectangle_ints_topic', Int32MultiArray, callbackRectangleInts)
     sub = rospy.Subscriber('shutdown_topic', Bool, callbackShutdown)
     sub = rospy.Subscriber('timer_topic', String, callbackTimer)
+    sub = rospy.Subscriber('turtle_bot_in_green_room', Bool, callbackInGreenRoom)
+    sub = rospy.Subscriber('turtle_bot_main_room_moving_topic', Bool, callbackTurtleBotMainRoomMovingTopic)
 
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()

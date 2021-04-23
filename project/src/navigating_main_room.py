@@ -30,6 +30,8 @@ class Navigator():
         self.moving_pub = rospy.Publisher('turtle_bot_main_room_moving_topic', Bool, queue_size=10)
         self.in_room_pub = rospy.Publisher('turtle_bot_in_green_room', Bool, queue_size=10)
 
+        self.in_room = False
+
         # Get home directory
         home = expanduser("~")
         # and open input_points.yaml file
@@ -96,6 +98,7 @@ class Navigator():
 
         if success:
             rospy.loginfo("Hooray, reached the desired pose")
+            self.in_room = True
         else:
             rospy.loginfo("The base has failed to reach the desired pose")
         self.moving_pub.publish(False)
@@ -117,6 +120,7 @@ class Navigator():
 
         if success:
             rospy.loginfo("Hooray, reached the desired pose")
+            self.in_room = True
         else:
             rospy.loginfo("The base has failed to reach the desired pose")
         self.moving_pub.publish(False)
@@ -231,33 +235,29 @@ def main(args):
     global green_discovered
     global moving
     navigator = Navigator()
-    in_room = False
 
-    while not rospy.is_shutdown() and not in_room:
+    while not rospy.is_shutdown() and not navigator.in_room:
         if first_flag == False:
             print("sending to room 1")
             navigator.entrance_of_room_1()
             count_track += 1
-            first_flag = True
 
         if green_discovered == True and count_track == 1:
             print("moving to to room 1 center")
             navigator.center_of_room_1()
-            in_room = True
 
-        if second_flag == False and green_discovered == False and not in_room:
+        if second_flag == False and green_discovered == False and not navigator.in_room:
             print("sending to to room 2")
             navigator.entrance_of_room_2()
             count_track += 1
-            second_flag = True
 
-        if not in_room:
+        if not navigator.in_room:
             if green_discovered == True and count_track == 2:
                 navigator.center_of_room_2()
-                in_room = True
             else:
                 navigator.center_of_room_1()
-                in_room = True
+
+        navigator.in_room_pub.publish(navigator.in_room)
 
 
 if __name__ == '__main__':
