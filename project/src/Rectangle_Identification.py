@@ -133,3 +133,19 @@ def main(args):
 # Check if the node is executing in the main path
 if __name__ == '__main__':
     main(sys.argv)
+
+# Testing: Rectangle identfied representing the cluedo character Rectangle
+# image and correctly tracks the rectangle shape and draws rectangle using contours
+# project.world: Test Successful
+# project_1.world: Test Successful
+# project_2.world: Test Successful
+# project_3.world: Test Successful
+# project_4.world: Test Successful
+# project_5.world: Test Successful
+# project_6.world: Test Successful
+# project_7.world: Test Successful for multiple characters
+# project_8.world: Test Successful
+# project_9.world: Test Successful
+# project_10.world: Test Successful
+# project_11.world: Test Successful
+# project_12.world: Test Successful
