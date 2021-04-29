@@ -91,7 +91,7 @@ class greenNavigation():
                 print("waiting...")
 
     # rotates around current pose to look for character in the scene
-    # CATION: does NOT reset to rotation from before function, exits with new rotation 
+    # CATION: does NOT reset to rotation from before function, exits with new rotation
     # Return: True if portrait is found, False otherwise
     def lookForRectange(self):
         rotation = 0
@@ -215,3 +215,21 @@ def main(args):
 
 if __name__ == '__main__':
     main(sys.argv)
+
+# Testing: Test for reasonable navigation of green room to locate cluedo character
+# Test for correct initial movement if cluedo character in view
+# Test for correct angle handling to ensure rotation performed when character not in view
+# Test for correct rotation for movement towards to obtain cluedo character in focus
+# Test for correct position for capturing snapshot of the cluedo character
+
+# project.world: All tests passed
+# In example environment/map provided:
+# Robot navigates to centre of green room, and performs rotation to identify
+# cludeo character, angle is changed for rotation, when not located
+# once character located, movement towards character is logical and correct
+# The turtlebot is positioned correctly with character in focus and fully in view on the camera feed
+# project_1.world: All tests passed,
+# project_2.world: All tests passed
+# project_5.world: All tests passed
+# project_8.world: All tests passed
+# project_12.world: All tests passed
