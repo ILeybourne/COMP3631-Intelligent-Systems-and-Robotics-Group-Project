@@ -48,3 +48,18 @@ def main(args):
 # Check if the node is executing in the main path
 if __name__ == '__main__':
     main(sys.argv)
+
+# Testing: Timer accuratley times from start to completion of task
+# Ensure all worlds are completed within the 5 minute time allocation provided
+# project.world: Test Successful. Task completed in 3:43:765
+# project_1.world: Test Successful Task completed in 2:23:876
+# project_2.world: Test Successful Task completed within 5 minutes
+# project_3.world: Test Successful Task completed in 2:01:546
+# project_4.world: Test Successful
+# project_5.world: Test Successful
+# project_6.world: Test UNSUCESSFUL Task completed in 5:43:765
+# project_7.world: World only used for testing cluedo characters
+# project_9.world: Test Successful Task completed within 5 minutes
+# project_10.world: Test Successful Task completed within 5 minutes
+# project_11.world: Test Successful
+# project_12.world: Test Successful
