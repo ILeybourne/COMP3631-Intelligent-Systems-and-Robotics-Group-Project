@@ -183,3 +183,19 @@ def main(args):
 # Check if the node is executing in the main path
 if __name__ == '__main__':
     main(sys.argv)
+
+# Testing: Circle finder accuratly identifies red circle and green circle
+# Ensure correct circle is identified and correct flag is set to true
+# project.world: Test Successful Red circle identfied flag true, Green circle identfied flag true
+# project_1.world: Test Successful
+# project_2.world: Test Successful
+# project_3.world: Test Successful
+# project_4.world: Test Successful
+# project_5.world: Test Successful
+# project_6.world: Test Successful
+# project_7.world: World only used for testing cluedo characters
+# project_8.world: Test Successful
+# project_9.world: Test Successful
+# project_10.world: Test Successful
+# project_11.world: Test Successful
+# project_12.world: Test Successful
