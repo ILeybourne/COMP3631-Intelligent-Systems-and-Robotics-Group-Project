@@ -155,3 +155,22 @@ def main(args):
 # Check if the node is executing in the main path
 if __name__ == '__main__':
     main(sys.argv)
+
+# Testing: Character output accurately outputs correct cluedo character
+# Test cases:
+# Test if module correctly outputs correct cluedo_character to png file
+# Test if correct character name is printed to text file
+# Test if correct character name is printed to launch file output
+# Ensure correct flags are set to true and false as required
+# project.world: Test Successful Scarlet image captured and written to files as expected
+# project_2.world: Test Successful Scarlet image captured and written to files as expected
+# project_3.world: Test Successful Scarlet image captured and written to files as expected
+# project_4.world: Test Successful Scarlet image captured and written to files as expected
+# project_5.world: Test Successful Scarlet image captured and written to files as expected
+# project_6.world: Test Successful Plum image captured and written to files as expected
+# project_7.world: Test not required
+# project_8.world: Test Successful Scarlet image captured and written to files as expected
+# project_9.world: Test Successful Scarlet image captured and written to files as expected
+# project_10.world: Test Successful Plum image captured and written to files as expected
+# project_11.world: Test Successful Peacock image captured and written to files as expected
+# project_12.world: Test Successful Mustard image captured and written to files as expected 
