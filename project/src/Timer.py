@@ -51,15 +51,15 @@ if __name__ == '__main__':
 
 # Testing: Timer accuratley times from start to completion of task
 # Ensure all worlds are completed within the 5 minute time allocation provided
-# project.world: Test Successful. Task completed in 3:43:765
+# project.world: Test Successful. Task completed in 1:43:765 and 0:39:02
 # project_1.world: Test Successful Task completed in 2:23:876
 # project_2.world: Test Successful Task completed within 5 minutes
 # project_3.world: Test Successful Task completed in 2:01:546
-# project_4.world: Test Successful
+# project_4.world: Test Successful Task completed in 0:49:02
 # project_5.world: Test Successful
-# project_6.world: Test UNSUCESSFUL Task completed in 5:43:765
+# project_6.world: Test UNSUCESSFUL Task completed in 5:43:765 (worst case)
 # project_7.world: World only used for testing cluedo characters
-# project_9.world: Test Successful Task completed within 5 minutes
-# project_10.world: Test Successful Task completed within 5 minutes
-# project_11.world: Test Successful
+# project_9.world: Test Successful Task completed within 4 minutes
+# project_10.world: Test Successful Task completed within 2 minutes
+# project_11.world: Test Successful Task completed within 1 minute
 # project_12.world: Test Successful
