@@ -193,3 +193,18 @@ def main(args):
 # Check if the node is executing in the main path
 if __name__ == '__main__':
     main(sys.argv)
+
+# Testing: Character Identification accurately identfies the correct character
+# Ensure correct flags are set to true and false as required
+# project.world: Test Successful Scarlet identfied as expected
+# project_2.world: Test Successful Scarlet identfied as expected
+# project_3.world: Test Successful Scarlet identfied as expected
+# project_4.world: Test Successful Scarlet identfied as expected
+# project_5.world: Test Successful Scarlet identfied as expected
+# project_6.world: Test Successful Plum identfied as expected
+# project_7.world: Test Successful All characters identfied as expected
+# project_8.world: Test Successful Scarlet identfied as expected
+# project_9.world: Test Successful Scarlet identfied as expected
+# project_10.world: Test Successful Plum identfied as expected
+# project_11.world: Test Successful Peacock identfied as expected
+# project_12.world: Test Successful Mustard identfied as expected
